@@ -1,31 +1,32 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Button } from "@/components/ui/button"
-import { Code2Icon, Menu } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Code2Icon, Menu, X } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  // const { isSignedIn } = useUser();
-  const isSignedIn = false
+  const [isOpen, setIsOpen] = useState(false);
 
   const NavItems = () => (
     <>
-      <Link href="/" className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary">
+      <Link
+        href="/"
+        className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
+      >
         Home
       </Link>
-      <Link href="/about" className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary">
+      <Link
+        href="/about"
+        className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary"
+      >
         About
       </Link>
     </>
-  )
+  );
 
   return (
     <header className="border-b">
@@ -40,17 +41,17 @@ export function Navbar() {
           </nav>
         </div>
         <div className="ml-auto flex items-center space-x-4">
-          <ThemeToggle />
           <div className="hidden md:block">
-            {!isSignedIn ? (
-              <>
-                <Button variant="outline" className="mr-2">Login</Button>
-                <Button>Sign Up</Button>
-              </>
-            ) : (
-              <Button>Dashboard</Button>
-            )}
+            <ThemeToggle />
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button>Sign in</Button>
+              </SignInButton>
+            </SignedOut>
           </div>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="outline" size="icon">
@@ -61,23 +62,45 @@ export function Navbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
-                    <Code2Icon className="h-6 w-6" />
-                    <span className="font-bold">NextApp</span>
-                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      href="/"
+                      className="flex items-center space-x-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Code2Icon className="h-6 w-6" />
+                      <span className="font-bold">NextApp</span>
+                    </Link>
+                    <ThemeToggle />
+                  </div>
+                  {/* <SheetClose asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                  </SheetClose> */}
                 </div>
                 <nav className="flex flex-col gap-4">
                   <NavItems />
                 </nav>
                 <div className="mt-auto">
-                  {!isSignedIn ? (
-                    <div className="flex flex-col gap-2">
-                      <Button variant="outline" className="w-full" onClick={() => setIsOpen(false)}>Login</Button>
-                      <Button className="w-full" onClick={() => setIsOpen(false)}>Sign Up</Button>
-                    </div>
-                  ) : (
-                    <Button className="w-full" onClick={() => setIsOpen(false)}>Dashboard</Button>
-                  )}
+                  <SignedOut>
+                    <SignInButton mode="modal">
+                      <Button
+                        className="w-full"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Sign in
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                  <SignedIn>
+                    <Button className="w-full" onClick={() => setIsOpen(false)}>
+                      Dashboard
+                    </Button>
+                  </SignedIn>
                 </div>
               </div>
             </SheetContent>
@@ -85,5 +108,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }
